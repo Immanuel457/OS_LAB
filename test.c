@@ -72,20 +72,7 @@ void display(int n_m,int n_p,mry m[n_m],pro p[n_p]){
         printf("The remaining space : %d \n",m[i].rem_space);
     }
 }
-void dec_arrange(int n_m,mry m[n_m]){
-    int i,j;
-    mry temp;
-    for(i = 0;i < n_m;i++){
-        for(j = i;j < n_m;j++){
-            if(m[j].rem_space > m[i].rem_space){
-                temp = m[j];
-                m[j] = m[i];
-                m[i] = temp;
-            }
-        }
-    }
-}
-void asc_arrange(int n_m,mry m[n_m]){
+void rearrange(int n_m,mry m[n_m]){
     int i,j;
     mry temp;
     for(i = 0;i < n_m;i++){
@@ -98,42 +85,10 @@ void asc_arrange(int n_m,mry m[n_m]){
         }
     }
 }
-//________________________________________________________________________
-void first_fit(int n_m,int n_p,mry m[n_m],pro p[n_p]){
-    int i,j;
-    for(i = 0;i < n_p;i++){
-        for(j = 0;j < n_m;j++){
-            if(m[j].rem_space > p[i].space){
-                enqueue(p[i],m[j]);
-                m[j].rem_space -= p[i].space;
-                break;
-            }
-        }
-    }
-    printf("The First Fit Allocation\n");
-    display(n_m,n_p,m,p);
-}
-void worst_fit(int n_m,int n_p,mry m[n_m],pro p[n_p]){
-    int i,j;
-    //dec_arrange(n_m,m);
-    for(i = 0;i < n_p;i++){
-        //dec_arrange(n_m,m);
-        for(j = 0;j < n_m;j++){
-            dec_arrange(n_m,m);
-            if(m[j].rem_space >= p[i].space){
-                enqueue(p[i],m[j]);
-                m[j].rem_space -= p[i].space;
-                break;
-            }
-        }
-    }
-    printf("The Worst Fit Allocation\n");
-    display(n_m,n_p,m,p);
-}
 void best_fit(int n_m,int n_p,mry m[n_m],pro p[n_p]){
     int i,j;
     for(i = 0;i < n_p;i++){
-        asc_arrange(n_m,m);
+        rearrange(n_m,m);
         for(j = 0;j < n_m;j++){
             if(m[j].rem_space >= p[i].space){
                 enqueue(p[i],m[j]);
@@ -142,10 +97,8 @@ void best_fit(int n_m,int n_p,mry m[n_m],pro p[n_p]){
             }
         }
     }
-    printf("The Best Fit Allocation\n");
     display(n_m,n_p,m,p);
 }
-//_______________________________________________________________________
 void initialize_process(int n_m,mry m[n_m]){
     int n_p;
     printf("Enter the number of process : ");
@@ -158,28 +111,7 @@ void initialize_process(int n_m,mry m[n_m]){
         printf("Enter the size of process %d : ",p[i].id);
         scanf("%d",&p[i].space);
     }
-    //display(n_m,n_p,m,p);
-    int choice;
-    printf("Enter your choice : \n");
-    printf("1.First Fit\n");
-    printf("2.Worst Fit\n");
-    printf("3.Best Fit\n");
-    scanf("%d",&choice);
-
-    switch(choice){
-        case 1:
-            printf("\n");
-            first_fit(n_m,n_p,m,p);
-            break;
-        case 2:
-            printf("\n");
-            worst_fit(n_m,n_p,m,p);
-            break;
-        case 3:
-            printf("\n");
-            best_fit(n_m,n_p,m,p);
-            break;
-    }
+    best_fit(n_m,n_p,m,p);
 }
 void initialize_memory(){
     int n;
