@@ -9,22 +9,22 @@ typedef struct paging_stack{
 }stack;
 int FRONT = -1;
 //____________________________________________________________________________
-void check_similar(int temp,int n_pf,int s[n_pf]){
+int check_similar(int temp,int n_pf,stack s[n_pf]){
     int flag = 0;
     for(int i = 0;i < n_pf;i++){
-        if(temp == s[i]){
+        if(temp == s[i].id){
             flag = 1;
         }
     }
     return flag;
 }
-void display(int n_pf,int s[n_pf]){
+void display(int n_pf,stack s[n_pf]){
     int i;
     for(i = 0;i < n_pf;i++){
-        printf("%d,",s[i]);
+        printf("%d,",s[i.id]);
     }
 }
-void FCFS(int n_p,int n_pf,int p[n_p],int s[n_pf]){
+void FCFS(int n_p,int n_pf,int p[n_p],stack s[n_pf]){
     int i,j,hit,check;
     for(i = 0;i < n_p;i++){
         while(j < n_pf){
@@ -60,7 +60,9 @@ void initialize_page_frame(int n_p,int p[n_p]){
     // initializing the page frame 
     stack s[n_pf];
     for(int i = 0;i < n_pf;i++){
-        s[i] = -1;
+        s[i].id = -1;
+        s[i].count = 0;
+        s[i].index = -1;
     }
     int choice;
     printf("Enter your choice : \n");
@@ -77,7 +79,7 @@ void initialize_page_frame(int n_p,int p[n_p]){
     }
 }
 void initialize_process(){
-    int n
+    int n;
     printf("Enter the number of process in the sequence : ");
     scanf("%d",&n);
 
@@ -87,6 +89,7 @@ void initialize_process(){
     for(i = 0;i < n;i++){
         scanf("%d",&p[i]);
     }
+    initialize_page_frame(n,p);
 }
 int main(){
     initialize_process();
