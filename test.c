@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+#define MAX 1100
 
 //___________________________________________________________________________
 typedef struct paging_stack{
@@ -9,10 +10,11 @@ typedef struct paging_stack{
 }stack;
 int FRONT = -1;
 //____________________________________________________________________________
-int check_similar(int temp,int n_pf,stack s[n_pf]){
+int OPT_check_similar(int temp,int n_pf,stack s[n_pf]){
     int flag = 0;
     for(int i = 0;i < n_pf;i++){
         if(temp == s[i].id){
+            s[i].count--;
             flag = 1;
         }
     }
@@ -25,67 +27,67 @@ void display(int n_pf,stack s[n_pf]){
     }
     printf("\n");
 }
-void recent_indicator(int n_pf,stack s[n_pf],int j){
-    int i = n_pf; 
-    s[j].index = n_pf;
-    while(0 < i){
-        if(s[i].id == -1){
-            i--;
-        }
-        else{
-            if(i == j){
-                i--;
-            }
-            else{
-                s[i].index--;
-                i--;
+void future_count(int n_p,int n_pf,int p[n_p],stack s[n_pf],int t){
+    int i,j;
+    for(i = 0;i < n_pf;i++){
+        s[i].count = 0;
+    }
+    for(i = t;i < n_p;i++){
+        for(j = 0;j < n_pf;j++){
+            if(p[i] == s[j].id){
+                s[j].count++;
             }
         }
     }
 }
-void LRU(int n_p,int n_pf,int p[n_p],stack s[n_pf]){
-    int i,j = 0,k = 0,hit = 0,check;
+void OPTIMAL(int n_p,int n_pf,int p[n_p],stack s[n_pf]){
+    int i,j = 0,hit = 0,check;
     for(i = 0;i < n_p;i++){
-        //printf("j = %d\n",j);
         while(j < n_pf){
             if(s[j].id == -1){
-                s[j].id = p[i];
-                recent_indicator(n_pf,s,j);
-                j++;
-                break;
-            }
-            else{
-                check = check_similar(p[i],n_pf,s);
-                //printf("check = %d",check);
+                future_count(n_p,n_pf,p,s,i);
+                check = OPT_check_similar(p[i],n_pf,s);
                 if(check != 1){
-                    k = 0;
-                    while(k < n_pf){
-                        if(s[k].index == 1){
-                            j = k;
-                            //break;
-                        }
-                        k++;
-                    }
-                    //printf("j = %d\n",j);
                     s[j].id = p[i];
-                    recent_indicator(n_pf,s,j);
+                    s[j].count--;
                     j++;
                     break;
                 }
                 else{
-                    recent_indicator(n_pf,s,j);
                     hit++;
                     j++;
                     break;
                 }
-                //printf("j = %d\n",j); 
+            }
+            else{
+                future_count(n_p,n_pf,p,s,i);
+                check = OPT_check_similar(p[i],n_pf,s);
+                if(check != 1){
+                    int k = 0;
+                    int min = MAX;
+                    while(k < n_pf){
+                        if(s[k].count < min){
+                            min = s[k].count;
+                            j = k;
+                        }
+                        //printf("i = %d count = %d\n",s[k].id,s[k].count);
+                        k++;
+                    }
+                    s[j].id = p[i];
+                    s[j].count--;
+                    j++;
+                    break;
+                }
+                else{
+                    hit++;
+                    j++;
+                    break;
+                }
             }
         }
         if(j == n_pf){
             j = 0;
         }
-        //printf("i = %d\n",i);
-        //printf("j = %d\n",j);
         display(n_pf,s);
     }
 }
@@ -102,7 +104,7 @@ void initialize_page_frame(int n_p,int p[n_p]){
         s[i].count = 0;
         s[i].index = -1;
     }
-    LRU(n_p,n_pf,p,s);
+    OPTIMAL(n_p,n_pf,p,s);
 }
 void initialize_process(){
     int n = 8;
@@ -110,7 +112,7 @@ void initialize_process(){
     scanf("%d",&n);*/
 
     int i;
-    int p[] = {1,2,5,3,2,3,1,5};
+    int p[] = {1,2,5,1,3,2,1,3};
     printf("Enter the order of process : \n");
     /*for(i = 0;i < n;i++){
         scanf("%d",&p[i]);
