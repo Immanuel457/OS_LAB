@@ -25,6 +25,14 @@ void display(int n_pf,stack s[n_pf]){
     }
     printf("\n");
 }
+void recent_indicator(int n_pf,stack s[n_pf],int j){
+    int i = j; 
+    s[j].index = n_p;
+    while(0 <= i){
+        i--;
+        s[i].index--;
+    }
+}
 //-----------------------------------------------------------------------------
 void FCFS(int n_p,int n_pf,int p[n_p],stack s[n_pf]){
     int i,j = 0,hit = 0,check;
@@ -55,6 +63,23 @@ void FCFS(int n_p,int n_pf,int p[n_p],stack s[n_pf]){
         display(n_pf,s);
     }
 }
+void LFU(int n_p,int n_pf,int p[n_p],stack s[n_pf]){
+    int i,j = 0,hit = 0,check;
+    for(i = 0;i < n_p;i++){
+        while(j < n_pf){
+            if(s[j].id == -1){
+                s[j].id = p[i];
+                recent_indicato(n_pf,s,j);
+                j++;
+                break;
+            }
+            else{
+                chech = check_similar(p[i],n_pf,s); 
+            }
+        }
+    }
+}
+//-------------------------------------------------------------------------------
 void initialize_page_frame(int n_p,int p[n_p]){
     int n_pf;
     printf("Enter the number of frames in a single page : ");
@@ -72,7 +97,7 @@ void initialize_page_frame(int n_p,int p[n_p]){
     printf("1.FCFS");
     printf("2.LRU");
     printf("3.LFU");
-    printf("4.Optimal");
+    printf("4.Optimal\t");
     scanf("%d",&choice);
 
     switch(choice){
