@@ -21,22 +21,24 @@ int check_similar(int temp,int n_pf,stack s[n_pf]){
 void display(int n_pf,stack s[n_pf]){
     int i;
     for(i = 0;i < n_pf;i++){
-        printf("%d,",s[i.id]);
+        printf("%d,",s[i].id);
     }
+    printf("\n");
 }
+//-----------------------------------------------------------------------------
 void FCFS(int n_p,int n_pf,int p[n_p],stack s[n_pf]){
-    int i,j,hit,check;
+    int i,j = 0,hit = 0,check;
     for(i = 0;i < n_p;i++){
         while(j < n_pf){
-            if(s[j] == -1){
-                s[j] = p[i];
+            if(s[j].id == -1){
+                s[j].id = p[i];
+                j++;
                 break;
             }
             else{
                 check = check_similar(p[i],n_pf,s);
                 if(check != 1){
-                    check = hit;
-                    s[j] = p[i];
+                    s[j].id = p[i];
                     j++;
                     break;
                 }
@@ -47,8 +49,9 @@ void FCFS(int n_p,int n_pf,int p[n_p],stack s[n_pf]){
                 }
             }
         }
-        if(j == n_p) j = 0;
-
+        if(j == n_pf){
+            j = 0;
+        }
         display(n_pf,s);
     }
 }
