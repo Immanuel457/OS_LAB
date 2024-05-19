@@ -26,11 +26,21 @@ void display(int n_pf,stack s[n_pf]){
     printf("\n");
 }
 void recent_indicator(int n_pf,stack s[n_pf],int j){
-    int i = j; 
-    s[j].index = n_p;
+    int i = n_pf; 
+    s[j].index = n_pf;
     while(0 <= i){
-        i--;
-        s[i].index--;
+        if(s[i].id == -1){
+            i--;
+        }
+        else{
+            if(i == j){
+                i--;
+            }
+            else{
+                i--;
+                s[i].index--;
+            }
+        }
     }
 }
 //-----------------------------------------------------------------------------
@@ -71,9 +81,10 @@ void FCFS(int n_p,int n_pf,int p[n_p],stack s[n_pf]){
         display(n_pf,s);
     }
 }
-void LFU(int n_p,int n_pf,int p[n_p],stack s[n_pf]){
+void LRU(int n_p,int n_pf,int p[n_p],stack s[n_pf]){
     int i,j = 0,k = 0,hit = 0,check;
     for(i = 0;i < n_p;i++){
+        printf("%d",j);
         while(j < n_pf){
             if(s[j].id == -1){
                 s[j].id = p[i];
@@ -82,11 +93,15 @@ void LFU(int n_p,int n_pf,int p[n_p],stack s[n_pf]){
                 break;
             }
             else{
-                chech = check_similar(p[i],n_pf,s);
+                check = check_similar(p[i],n_pf,s);
                 if(check != 1){
                     k = 0;
                     while(k < n_pf){
-
+                        if(s[k].index == 1){
+                            j = k;
+                            break;
+                        }
+                        k++;
                     }
                     s[j].id = p[i];
                     recent_indicator(n_pf,s,j);
@@ -94,10 +109,18 @@ void LFU(int n_p,int n_pf,int p[n_p],stack s[n_pf]){
                     break;
                 }
                 else{
-                    
+                    hit++;
+                    j++;
+                    break;
                 } 
             }
         }
+        if(j == n_pf){
+            j = 0;
+        }
+        printf("%d\n",i);
+        printf("%d\n",j);
+        display(n_pf,s);
     }
 }
 //-------------------------------------------------------------------------------
@@ -115,15 +138,18 @@ void initialize_page_frame(int n_p,int p[n_p]){
     }
     int choice;
     printf("Enter your choice : \n");
-    printf("1.FCFS");
-    printf("2.LRU");
-    printf("3.LFU");
+    printf("1.FCFS ");
+    printf("2.LRU ");
+    printf("3.LFU ");
     printf("4.Optimal\t");
     scanf("%d",&choice);
 
     switch(choice){
         case 1:
             FCFS(n_p,n_pf,p,s);
+            break;
+        case 2:
+            LRU(n_p,n_pf,p,s);
             break;
     }
 }

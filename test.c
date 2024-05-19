@@ -1,134 +1,123 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-#define MAX 15
-
-typedef struct memory{
-    int index;
-    int ini_space;
-    int rem_space;
-}mry;
-typedef struct process{
+//___________________________________________________________________________
+typedef struct paging_stack{
     int id;
-    int space;
-}pro;
-//__________________________________________________________________________
-typedef struct node{
-    int pro_id;
-    int mry_id;
-    int space;
-}queue;
-queue q[MAX];
+    int count;
+    int index;
+}stack;
 int FRONT = -1;
-int REAR = -1;
-void enqueue(pro temp,mry tmy){
-    if(FRONT == MAX){
-        printf("The queue is FULL !!.\n");
-        return;
-    }
-    else if(FRONT == -1){
-        FRONT = REAR = 0;
-        q[REAR].pro_id = temp.id;
-        q[REAR].space = temp.space;
-        q[REAR].mry_id = tmy.index;
-        REAR++;
-    }
-    else{
-        q[REAR].pro_id = temp.id;
-        q[REAR].space = temp.space;
-        q[REAR].mry_id = tmy.index;
-        REAR++;
-    }
-}
-queue dequeue(){
-    queue ql;
-    if(FRONT == -1){
-        //printf("The queue is EMPTY !!.\n");
-    }
-    else if(FRONT == REAR){
-        ql = q[FRONT];
-        FRONT = REAR = -1;
-    }
-    else{
-        ql = q[FRONT++];
-    }
-    return ql;
-}
-void display(int n_m,int n_p,mry m[n_m],pro p[n_p]){
-    int i,j;
-    FRONT = 0;
-    queue tempq;
-    for(i = 0;i < n_m;i++){
-        FRONT = 0;
-        printf("The index of the memory segment : %d \n",m[i].index);
-        printf("The initial size of memory segment : %d \n",m[i].ini_space);
-        for(j = 0;j < n_p;j++){
-            tempq = dequeue();
-            if(tempq.mry_id == m[i].index){
-                printf("The allocation is : ");
-                printf("P%d,(%d)\n",tempq.pro_id,tempq.space);
-           }
+//____________________________________________________________________________
+int check_similar(int temp,int n_pf,stack s[n_pf]){
+    int flag = 0;
+    for(int i = 0;i < n_pf;i++){
+        if(temp == s[i].id){
+            flag = 1;
         }
-        printf("The remaining space : %d \n",m[i].rem_space);
     }
+    return flag;
 }
-void rearrange(int n_m,mry m[n_m]){
-    int i,j;
-    mry temp;
-    for(i = 0;i < n_m;i++){
-        for(j = i;j < n_m;j++){
-            if(m[j].rem_space < m[i].rem_space){
-                temp = m[j];
-                m[j] = m[i];
-                m[i] = temp;
+void display(int n_pf,stack s[n_pf]){
+    int i;
+    for(i = 0;i < n_pf;i++){
+        printf("%d,",s[i].id);
+    }
+    printf("\n");
+}
+void recent_indicator(int n_pf,stack s[n_pf],int j){
+    int i = n_pf; 
+    s[j].index = n_pf;
+    while(0 < i){
+        if(s[i].id == -1){
+            i--;
+        }
+        else{
+            if(i == j){
+                i--;
+            }
+            else{
+                s[i].index--;
+                i--;
             }
         }
     }
 }
-void best_fit(int n_m,int n_p,mry m[n_m],pro p[n_p]){
-    int i,j;
+void LRU(int n_p,int n_pf,int p[n_p],stack s[n_pf]){
+    int i,j = 0,k = 0,hit = 0,check;
     for(i = 0;i < n_p;i++){
-        rearrange(n_m,m);
-        for(j = 0;j < n_m;j++){
-            if(m[j].rem_space >= p[i].space){
-                enqueue(p[i],m[j]);
-                m[j].rem_space -= p[i].space;
+        //printf("j = %d\n",j);
+        while(j < n_pf){
+            if(s[j].id == -1){
+                s[j].id = p[i];
+                recent_indicator(n_pf,s,j);
+                j++;
                 break;
             }
+            else{
+                check = check_similar(p[i],n_pf,s);
+                //printf("check = %d",check);
+                if(check != 1){
+                    k = 0;
+                    while(k < n_pf){
+                        if(s[k].index == 1){
+                            j = k;
+                            //break;
+                        }
+                        k++;
+                    }
+                    //printf("j = %d\n",j);
+                    s[j].id = p[i];
+                    recent_indicator(n_pf,s,j);
+                    j++;
+                    break;
+                }
+                else{
+                    recent_indicator(n_pf,s,j);
+                    hit++;
+                    j++;
+                    break;
+                }
+                //printf("j = %d\n",j); 
+            }
         }
+        if(j == n_pf){
+            j = 0;
+        }
+        //printf("i = %d\n",i);
+        //printf("j = %d\n",j);
+        display(n_pf,s);
     }
-    display(n_m,n_p,m,p);
 }
-void initialize_process(int n_m,mry m[n_m]){
-    int n_p;
-    printf("Enter the number of process : ");
-    scanf("%d",&n_p);
+//-------------------------------------------------------------------------------
+void initialize_page_frame(int n_p,int p[n_p]){
+    int n_pf = 2;
+    /*printf("Enter the number of frames in a single page : ");
+    scanf("%d",&n_pf);*/
+
+    // initializing the page frame 
+    stack s[n_pf];
+    for(int i = 0;i < n_pf;i++){
+        s[i].id = -1;
+        s[i].count = 0;
+        s[i].index = -1;
+    }
+    LRU(n_p,n_pf,p,s);
+}
+void initialize_process(){
+    int n = 8;
+    /*printf("Enter the number of process in the sequence : ");
+    scanf("%d",&n);*/
 
     int i;
-    pro p[n_p];
-    for(i = 0;i < n_p;i++){
-        p[i].id = i;
-        printf("Enter the size of process %d : ",p[i].id);
-        scanf("%d",&p[i].space);
-    }
-    best_fit(n_m,n_p,m,p);
-}
-void initialize_memory(){
-    int n;
-    printf("Enter the numebr of segments of memory : ");
-    scanf("%d",&n);
-
-    int i;
-    mry m[n];
-    for(i = 0;i < n;i++){
-        m[i].index = i;
-        printf("Enter the size of the segment %d : ",m[i].index);
-        scanf("%d",&m[i].ini_space);
-        m[i].rem_space = m[i].ini_space;
-    }
-    initialize_process(n,m);
+    int p[] = {1,2,5,3,2,3,1,5};
+    printf("Enter the order of process : \n");
+    /*for(i = 0;i < n;i++){
+        scanf("%d",&p[i]);
+    }*/
+    initialize_page_frame(n,p);
 }
 int main(){
-    initialize_memory();
+    initialize_process();
     return 0;
 }
