@@ -69,12 +69,21 @@ void LFU(int n_p,int n_pf,int p[n_p],stack s[n_pf]){
         while(j < n_pf){
             if(s[j].id == -1){
                 s[j].id = p[i];
-                recent_indicato(n_pf,s,j);
+                recent_indicator(n_pf,s,j);
                 j++;
                 break;
             }
             else{
-                chech = check_similar(p[i],n_pf,s); 
+                chech = check_similar(p[i],n_pf,s);
+                if(check != 1){
+                    s[j].id = p[i];
+                    recent_indicator(n_pf,s,j);
+                    j++;
+                    break;
+                }
+                else{
+                    
+                } 
             }
         }
     }
