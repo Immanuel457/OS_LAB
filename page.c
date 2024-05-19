@@ -39,9 +39,17 @@ void FCFS(int n_p,int n_pf,int p[n_p],stack s[n_pf]){
     for(i = 0;i < n_p;i++){
         while(j < n_pf){
             if(s[j].id == -1){
-                s[j].id = p[i];
-                j++;
-                break;
+                check = check_similar(p[i],n_pf,s);
+                if(check != 1){
+                    s[j].id = p[i];
+                    j++;
+                    break;
+                }
+                else{
+                    s[j].id = p[i];
+                    j++;
+                    break;
+                }
             }
             else{
                 check = check_similar(p[i],n_pf,s);
@@ -64,7 +72,7 @@ void FCFS(int n_p,int n_pf,int p[n_p],stack s[n_pf]){
     }
 }
 void LFU(int n_p,int n_pf,int p[n_p],stack s[n_pf]){
-    int i,j = 0,hit = 0,check;
+    int i,j = 0,k = 0,hit = 0,check;
     for(i = 0;i < n_p;i++){
         while(j < n_pf){
             if(s[j].id == -1){
@@ -76,6 +84,10 @@ void LFU(int n_p,int n_pf,int p[n_p],stack s[n_pf]){
             else{
                 chech = check_similar(p[i],n_pf,s);
                 if(check != 1){
+                    k = 0;
+                    while(k < n_pf){
+
+                    }
                     s[j].id = p[i];
                     recent_indicator(n_pf,s,j);
                     j++;
