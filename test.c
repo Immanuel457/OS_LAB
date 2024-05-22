@@ -70,6 +70,7 @@ void Optimal(){
                             mx = f[k].index;
                             j = k;
                         }
+                        printf("f[j].index = %d\n",f[j].index);
                         printf("i = %d,j = %d,\n",i,j);
                         k++;
                     }
