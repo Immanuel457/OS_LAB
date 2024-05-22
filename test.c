@@ -6,10 +6,10 @@ typedef struct page_frame{
     int id;
     int index;
 }frame;
-int n_p;
-int n_pf = 2;
+int n_p = 14;
+int n_pf = 4;
 int p[] = {1,2,3,4,3,1,2,4,5,2,1,2,3,4};
-frame f[2];
+frame f[4];
 
 void display(){
     for(int i = 0;i < n_pf;i++){
@@ -25,20 +25,24 @@ int check_similar(int i){
     return 0;
 }
 void future_index(int i){
-    int j,k = 0,index = 0;
-    for(j = i+1;j < n_p;j++){
+    int k,index = 0;
+    int v = n_p;
+    for(int n = 0;n < n_pf;n++){
+        f[n].index = 0;
+    }
+    for(k = 0;v > i;v--){
         while(k < n_pf){
-            if(f[k].id == p[j]){
-                f[k].index = index;
-                index++;
+            if(f[k].id == p[i]){
+                f[k].index = v;
             }
             k++;
         }
     }
 }
 void Optimal(){
-    int i,j = 0,hit,check;
+    int i,j = 0,hit,check = 0;
     for(i = 0;i < n_p;i++){
+        //printf("{p[i] = %d}",p[i]);
         while(j < n_pf){
             if(f[j].id == -1){
                 future_index(i);
@@ -57,13 +61,13 @@ void Optimal(){
             else{
                 future_index(i);
                 check = check_similar(i);
-                printf("check = %d",check);
+                //printf("check = %d",check);
                 if(check != 1){
                     int k = 0;
-                    int min = 99;
+                    int mx = 0;
                     while(k < n_pf){
-                        if(min > f[k].index){
-                            min = f[k].index;
+                        if(mx < f[k].index){
+                            mx = f[k].index;
                             j = k;
                         }
                         printf("i = %d,j = %d,\n",i,j);
@@ -80,8 +84,9 @@ void Optimal(){
                 }
             }
         }
-        //display();
-        //printf("\n");
+        if(j == n_pf) j = 0;
+        display();
+        printf("\n");
     }
 }
 void initialize_frame(){
@@ -93,15 +98,16 @@ void initialize_frame(){
 void initialize(){
     //printf("Enter the number of process : ");
     //scanf("%d",&n_p);
-    n_p = 14;
+    //n_p = 14;
     //printf("Enter the process id  : \n");
     /*for(int i = 0;i < n;i++){
         scanf("%d",&p[i]);
     }*/
-    initialize_frame();
+    //initialize_frame();
 }
 int main(){
-    initialize();
+    //initialize();
+    initialize_frame();
     Optimal();
     return 0;
 }
