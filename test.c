@@ -1,114 +1,69 @@
 #include<stdio.h>
 #include<stdlib.h>
-#define max 20
+#include<sys/types.h>
+#include<sys/unistd.h>
+#include<sys/wait.h>
 
-typedef struct page_frame{
-    int id;
-    int index;
-}frame;
-int n_p = 14;
-int n_pf = 4;
-int p[] = {1,2,3,4,3,1,2,4,5,2,1,2,3,4};
-frame f[4];
-
-void display(){
-    for(int i = 0;i < n_pf;i++){
-        printf("%d,",f[i]);
-    }
-}
-int check_similar(int i){
-    for(int j = 0;j < n_pf;j++){
-        if(p[i] == f[j].id){
-            return 1;
-        }
-    }
-    return 0;
-}
-void future_index(int i){
-    int k,index = 0;
-    int v = n_p;
-    for(int n = 0;n < n_pf;n++){
-        f[n].index = 0;
-    }
-    for(k = 0;v > i;v--){
-        while(k < n_pf){
-            if(f[k].id == p[i]){
-                f[k].index = v;
-            }
-            k++;
-        }
-    }
-}
-void Optimal(){
-    int i,j = 0,hit,check = 0;
-    for(i = 0;i < n_p;i++){
-        //printf("{p[i] = %d}",p[i]);
-        while(j < n_pf){
-            if(f[j].id == -1){
-                future_index(i);
-                check = check_similar(i);
-                if(check != 1){
-                    f[j].id = p[i];
-                    j++;
-                    break;
-                }
-                else{
-                    hit++;
-                    j++;
-                    break;
-                }
-            }
-            else{
-                future_index(i);
-                check = check_similar(i);
-                //printf("check = %d",check);
-                if(check != 1){
-                    int k = 0;
-                    int mx = 0;
-                    while(k < n_pf){
-                        if(mx < f[k].index){
-                            mx = f[k].index;
-                            j = k;
-                        }
-                        printf("f[j].index = %d\n",f[j].index);
-                        printf("i = %d,j = %d,\n",i,j);
-                        k++;
-                    }
-                    f[j].id = p[i];
-                    j++;
-                    break;
-                }
-                else{
-                    hit++;
-                    j++;
-                    break;
-                }
+void prime(int n){
+    int i,j,flag = 0;
+    printf("prime numbers are - ");
+    for(i = 2;i < n;i++){
+        flag = 0;
+        for(j = 2;j < i/2;j++){
+            if(i%j == 0){
+                flag++;
             }
         }
-        if(j == n_pf) j = 0;
-        display();
-        printf("\n");
+        if(flag < 2){
+            printf("%d,",i);
+        }
     }
-}
-void initialize_frame(){
-    for(int i = 0;i < n_pf;i++){
-        f[i].id = -1;
-        f[i].index = 0;
-    }
-}
-void initialize(){
-    //printf("Enter the number of process : ");
-    //scanf("%d",&n_p);
-    //n_p = 14;
-    //printf("Enter the process id  : \n");
-    /*for(int i = 0;i < n;i++){
-        scanf("%d",&p[i]);
-    }*/
-    //initialize_frame();
+    printf("\n");
 }
 int main(){
-    //initialize();
-    initialize_frame();
-    Optimal();
+    pid_t p0 = fork();
+    if(p0 == -1){
+        perror("Failed to create child !! \n");
+        exit(1);
+    }
+    else if(p0 == 0){
+        pid_t p1 = fork();
+        if(p1 == -1){
+            perror("Failed.\n");
+            exit(1);
+        }
+        else if(p1 == 0){
+            int n;
+            printf("Enter the limit : ");
+            scanf("%d",&n);
+            
+            pid_t p3 = fork();
+            if(p3 == -1){
+                perror("Failed \n");
+                exit(1);
+            }
+            else if(p3 == 0){
+                prime(n);
+                exit(0);
+            }
+            else{
+                p3 = wait(NULL);
+                printf("Completed p3\n");
+                exit(0);
+            }
+            exit(0);
+        }
+        else{
+            p1 = wait(NULL);
+            printf("Completed p1\n");
+            exit(0);
+        }
+        exit(0);
+    }
+    else{
+        p0 = wait(NULL);
+        printf("Completed !!\n");
+        exit(0);
+    }
     return 0;
 }
