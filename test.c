@@ -7,13 +7,13 @@ typedef struct page_frame{
     int index;
 }frame;
 int n_p;
-int n_pf = 4;
-int p[max];
-frame f[4];
+int n_pf = 2;
+int p[] = {1,2,3,4,3,1,2,4,5,2,1,2,3,4};
+frame f[2];
 
 void display(){
     for(int i = 0;i < n_pf;i++){
-        printf("%d",f[i]);
+        printf("%d,",f[i]);
     }
 }
 int check_similar(int i){
@@ -57,14 +57,16 @@ void Optimal(){
             else{
                 future_index(i);
                 check = check_similar(i);
+                printf("check = %d",check);
                 if(check != 1){
                     int k = 0;
-                    int min = 0;
+                    int min = 99;
                     while(k < n_pf){
                         if(min > f[k].index){
                             min = f[k].index;
                             j = k;
                         }
+                        printf("i = %d,j = %d,\n",i,j);
                         k++;
                     }
                     f[j].id = p[i];
@@ -78,8 +80,8 @@ void Optimal(){
                 }
             }
         }
-        display();
-        printf("\n");
+        //display();
+        //printf("\n");
     }
 }
 void initialize_frame(){
@@ -92,7 +94,6 @@ void initialize(){
     //printf("Enter the number of process : ");
     //scanf("%d",&n_p);
     n_p = 14;
-    p[] = {1,2,3,4,3,1,2,4,5,2,1,2,3,4};
     //printf("Enter the process id  : \n");
     /*for(int i = 0;i < n;i++){
         scanf("%d",&p[i]);
